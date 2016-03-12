@@ -3,6 +3,7 @@ package com.afterecho.gradle
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -21,14 +22,21 @@ class WordsToEnumTask extends DefaultTask {
     @OutputDirectory
     File outDir
 
+    @Input
+    String enumClassName
+
+    @Input
+    String outputPackageName
+
     @TaskAction
     def makeWordsIntoEnums() {
-        Builder wordsEnumBuilder = enumBuilder("WordsEnum").addModifiers(Modifier.PUBLIC)
+        outDir.deleteDir()
+        Builder wordsEnumBuilder = enumBuilder(enumClassName).addModifiers(Modifier.PUBLIC)
         wordsFile.readLines().each {
             wordsEnumBuilder.addEnumConstant(it).build()
         }
         TypeSpec wordsEnum = wordsEnumBuilder.build();
-        JavaFile javaFile = JavaFile.builder("com.afterecho.android.util", wordsEnum).build();
+        JavaFile javaFile = JavaFile.builder(outputPackageName, wordsEnum).build();
         javaFile.writeTo(outDir)
     }
 }
