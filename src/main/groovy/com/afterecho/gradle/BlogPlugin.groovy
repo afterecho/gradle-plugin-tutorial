@@ -24,5 +24,6 @@ class BlogPlugin implements Plugin<Project> {
                 variant.registerJavaGeneratingTask task, outputDir
             }
         }
+        target.android.registerTransform(new BlogTransform())
     }
 }
